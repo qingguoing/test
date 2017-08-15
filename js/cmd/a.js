@@ -7,3 +7,6 @@ const obj = {
 };
 
 module.exports = obj;
+
+
+setTimeout(() => obj.name = 'qingguoing', 0);
