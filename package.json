@@ -1,0 +1,28 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "test",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "babel-register": "node ./pack/babel/register.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qingguoing/test.git"
+  },
+  "keywords": [
+    "test",
+    "demo"
+  ],
+  "author": "qingguoing",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qingguoing/test/issues"
+  },
+  "homepage": "https://github.com/qingguoing/test#readme",
+  "devDependencies": {
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-register": "^6.26.0"
+  }
+}
