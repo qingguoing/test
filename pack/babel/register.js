@@ -8,4 +8,5 @@ require('babel-register')({
     babelrc: false,
 });
 
-require('../demo/index.js');
+require('../demo/register.js');
+// require('../exclude/index.js');
