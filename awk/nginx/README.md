@@ -4,7 +4,7 @@
 
 终端运行 `awk -f logs_analyze.awk test.log`
 
-具体可参考：
+具体可参考：https://qingguoing.com/2017/09/16/awk/
 
 ### License
 
