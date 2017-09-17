@@ -1,0 +1,10 @@
+#test1
+127.0.0.1 test1.google.com
+127.0.0.2 test2.google.com
+127.0.0.3 test3.google.com
+
+# --------------------
+
+127.0.0.4 test4.google.com
+127.0.0.5 test5.google.com
+127.0.0.6 test6.google.com
