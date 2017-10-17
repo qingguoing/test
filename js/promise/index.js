@@ -2,7 +2,7 @@ const innerProm = Promise.resolve();
 
 const test = () => {
     return new Promise((resolve, reject) => {
-       resolve('333');
+       setTimeout(() => resolve('333'), 3000);
     });
 };
 
