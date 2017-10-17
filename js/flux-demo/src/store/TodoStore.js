@@ -15,6 +15,7 @@ class TodoStore extends ReduceStore {
         switch (action.type) {
             case TodoActionTypes.ADD_TODO:
                 if (!action.text) return state;
+                // 新的 state
                 return [...state, action.text];
             case TodoActionTypes.DELETE_TODO:
                 state.splice(action.id, 1);
