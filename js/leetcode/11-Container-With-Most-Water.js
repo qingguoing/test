@@ -18,14 +18,12 @@ var maxArea = function(height) {
     while (i < j) {
         const iHeight = height[i];
         const jHeight = height[j];
-        let minHeight = iHeight;
+        maxWater = Math.max(maxWater, Math.min(iHeight, jHeight) * (j - i));        
         if (iHeight < jHeight) {
             i++;
         } else {
             j--;
-            minHeight = jHeight;
         }
-        maxWater = Math.max(maxWater, minHeight * (j - i));
     }
     return maxWater;
 };
