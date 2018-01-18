@@ -1,0 +1,7 @@
+#!/usr/bin/env node
+
+var cli = require('../lib/index');
+
+var cmd = process.argv.slice(2);
+
+cli.run(cmd);
