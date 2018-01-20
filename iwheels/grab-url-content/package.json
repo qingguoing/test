@@ -1,7 +1,10 @@
 {
   "name": "grab-url-content",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "get the response body of the url and write it to a file",
+  "bin": {
+    "grab-url": "bin/grab"
+  },
   "main": "lib/index.js",
   "scripts": {
     "build": "parcel build"
