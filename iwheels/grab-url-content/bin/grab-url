@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var cli = require('../lib/index');
+var cli = require('../dist/grab-url-content');
 
 var cmd = process.argv.slice(2);
 
