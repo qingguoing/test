@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-var cli = require('../build/grab-url-content');
+var cli = require('../build');
 console.log(cli);
 var cmd = process.argv.slice(2);
 

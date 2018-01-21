@@ -1,6 +1,6 @@
 {
   "name": "grab-url-content",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "get the response body of the url and write it to a file",
   "bin": {
     "grab-url": "bin/grab"
