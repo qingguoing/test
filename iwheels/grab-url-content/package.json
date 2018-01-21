@@ -1,6 +1,6 @@
 {
   "name": "grab-url-content",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "get the response body of the url and write it to a file",
   "bin": {
     "grab-url": "bin/grab"
@@ -36,9 +36,11 @@
   },
   "devDependencies": {
     "babel": "^6.23.0",
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "babel-preset-env": "^1.6.1",
-    "parcel-bundler": "^1.4.1"
+    "webpack": "^3.10.0"
   }
 }

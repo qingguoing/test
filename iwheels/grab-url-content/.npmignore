@@ -1,1 +1,3 @@
-.cache/
+webpack.config.js
+.gitignore
+lib/
