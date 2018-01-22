@@ -60,22 +60,33 @@ var grabFile = function grabFile(url, fileName) {
   req.end();
 };
 
-var cli = module.exports = {
-  run: function run(cmd) {
-    var _minimist = minimist(cmd),
-        _minimist$u = _minimist.u,
-        u = _minimist$u === undefined ? 'https://google.com' : _minimist$u,
-        _minimist$n = _minimist.n,
-        n = _minimist$n === undefined ? 'test' : _minimist$n,
-        _minimist$h = _minimist.h,
-        h = _minimist$h === undefined ? false : _minimist$h,
-        _minimist$help = _minimist.help,
-        help = _minimist$help === undefined ? false : _minimist$help;
+// const cli = module.exports = {
+//   run: (cmd) => {
+//     const { u = 'https://google.com', n = 'test', h = false, help = false } = minimist(cmd);
+//     if (!cmd.length || h || help) return cli.help();
+//     grabFile(u, n);
+//   },
+//   help: () => {
+//     console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
+//   }
+// }
 
-    if (!cmd.length || h || help) return cli.help();
-    grabFile(u, n);
-  },
-  help: function help() {
-    console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
-  }
+var cli = module.exports = grabFile;
+
+module.exports.run = function (cmd) {
+  var _minimist = minimist(cmd),
+      _minimist$u = _minimist.u,
+      u = _minimist$u === undefined ? 'https://google.com' : _minimist$u,
+      _minimist$n = _minimist.n,
+      n = _minimist$n === undefined ? 'test' : _minimist$n,
+      _minimist$h = _minimist.h,
+      h = _minimist$h === undefined ? false : _minimist$h,
+      _minimist$help = _minimist.help,
+      help = _minimist$help === undefined ? false : _minimist$help;
+
+  if (!cmd.length || h || help) return cli.help();
+  grabFile(u, n);
+};
+module.exports.help = function () {
+  console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
 };

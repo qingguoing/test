@@ -45,13 +45,24 @@ const grabFile = (url, fileName) => {
   req.end();
 }
 
-const cli = module.exports = {
-  run: (cmd) => {
-    const { u = 'https://google.com', n = 'test', h = false, help = false } = minimist(cmd);
-    if (!cmd.length || h || help) return cli.help();
-    grabFile(u, n);
-  },
-  help: () => {
-    console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
-  }
-}
+// const cli = module.exports = {
+//   run: (cmd) => {
+//     const { u = 'https://google.com', n = 'test', h = false, help = false } = minimist(cmd);
+//     if (!cmd.length || h || help) return cli.help();
+//     grabFile(u, n);
+//   },
+//   help: () => {
+//     console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
+//   }
+// }
+
+const cli = module.exports = grabFile;
+
+module.exports.run = (cmd) => {
+  const { u = 'https://google.com', n = 'test', h = false, help = false } = minimist(cmd);
+  if (!cmd.length || h || help) return cli.help();
+  grabFile(u, n);
+};
+module.exports.help = () => {
+  console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
+};
