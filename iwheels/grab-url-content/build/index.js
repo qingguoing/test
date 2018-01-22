@@ -62,14 +62,17 @@ var grabFile = function grabFile(url, fileName) {
 
 var cli = module.exports = {
   run: function run(cmd) {
-    if (!cmd.length) return cli.help();
-
     var _minimist = minimist(cmd),
         _minimist$u = _minimist.u,
         u = _minimist$u === undefined ? 'https://google.com' : _minimist$u,
         _minimist$n = _minimist.n,
-        n = _minimist$n === undefined ? 'test' : _minimist$n;
+        n = _minimist$n === undefined ? 'test' : _minimist$n,
+        _minimist$h = _minimist.h,
+        h = _minimist$h === undefined ? false : _minimist$h,
+        _minimist$help = _minimist.help,
+        help = _minimist$help === undefined ? false : _minimist$help;
 
+    if (!cmd.length || h || help) return cli.help();
     grabFile(u, n);
   },
   help: function help() {

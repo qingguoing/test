@@ -47,8 +47,8 @@ const grabFile = (url, fileName) => {
 
 const cli = module.exports = {
   run: (cmd) => {
-    if (!cmd.length) return cli.help();
-    const { u='https://google.com', n='test' } = minimist(cmd);
+    const { u = 'https://google.com', n = 'test', h = false, help = false } = minimist(cmd);
+    if (!cmd.length || h || help) return cli.help();
     grabFile(u, n);
   },
   help: () => {

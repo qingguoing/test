@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 var cli = require('../build');
-console.log(cli);
 var cmd = process.argv.slice(2);
 
 cli.run(cmd);
