@@ -1,13 +1,13 @@
 {
   "name": "grab-url-content",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "get the response body of the url and write it to a file",
   "bin": {
     "grab-url": "bin/grab"
   },
   "main": "build/index.js",
   "scripts": {
-    "build": "babel lib/index.js --out-file build/index.js"
+    "prepublish": "babel lib/index.js --out-file build/index.js"
   },
   "repository": {
     "type": "git",
