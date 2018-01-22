@@ -21,8 +21,8 @@ const grabFile = (url, fileName) => {
   const req = request({ protocol, ...rest }, (res) => {
     const contentType = res.headers[ 'content-type' ];
     const fileType = mime.getExtension(contentType);
-    spinner.text = `clear the file ${fileName}.${fileType} ...`;
-    const file = `${fileName}.${fileType}`;
+    const file = `${fileName}.${fileType}`;    
+    spinner.text = `clear the file ${file} ...`;
     try {
       fs.writeFileSync(file, '');
     } catch (e) {
@@ -37,24 +37,13 @@ const grabFile = (url, fileName) => {
       }
     });
     res.on('end', () => {
-      spinner.succeed(chalk.green('success'));
+      spinner.succeed(chalk.green(`success, generate file ${file}`));
     });
   });
 
   req.on('error', handleError);
   req.end();
 }
-
-// const cli = module.exports = {
-//   run: (cmd) => {
-//     const { u = 'https://google.com', n = 'test', h = false, help = false } = minimist(cmd);
-//     if (!cmd.length || h || help) return cli.help();
-//     grabFile(u, n);
-//   },
-//   help: () => {
-//     console.warn(chalk.yellow('generate a file of the url response body, use as:'), 'grab -url https://google.com -name test');
-//   }
-// }
 
 const cli = module.exports = grabFile;
 
