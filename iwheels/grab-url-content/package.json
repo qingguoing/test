@@ -5,7 +5,7 @@
   "bin": {
     "grab-url": "bin/grab"
   },
-  "main": "lib/index.js",
+  "main": "build/index.js",
   "scripts": {
     "build": "babel lib/index.js --out-file build/index.js"
   },
