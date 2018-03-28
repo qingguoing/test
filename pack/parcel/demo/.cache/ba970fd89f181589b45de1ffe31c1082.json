@@ -1,0 +1,1 @@
+{"dependencies":[{"name":"./test.css","loc":{"line":1,"column":7}}],"generated":{"js":"\"use strict\";\n\nrequire(\"./test.css\");"},"hash":"e83d5eaa0d481b4f70baacc3293781a6"}
