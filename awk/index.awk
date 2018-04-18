@@ -10,6 +10,6 @@
     }
     printf($2) >> "res.txt";
     printf(" ") >> "res.txt";
-    printf($1) >> "res.txt";
+    #printf($1) >> "res.txt";
     printf("\n") >> "res.txt";
 }
