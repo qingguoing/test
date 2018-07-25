@@ -1,0 +1,1 @@
+generate some min images with watermark with using sharp.
