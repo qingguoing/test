@@ -3,6 +3,7 @@
  */
 
 /**
+ * solution 1
  * @param {number[]} A
  * @return {number}
  */
@@ -22,4 +23,13 @@ var peakIndexInMountainArray = function(A) {
       return test(arr.slice(0, center));
   };
   return test(A);
+};
+
+/**
+ * solution 2
+ * @param {number[]} A
+ * @return {number}
+ */
+var peakIndexInMountainArray = function(A) {
+    return A.indexOf(Math.max(...A));
 };
