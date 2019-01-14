@@ -5,7 +5,7 @@
         "type": "node",
         "request": "launch",
         "name": "Launch Program",
-        "program": "${workspaceFolder}/js/leetcode/155-min-stack.js"
+        "program": "${workspaceFolder}/js/leetcode/test.js"
       }
     ],
     "compounds": []
