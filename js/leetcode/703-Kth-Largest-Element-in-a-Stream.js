@@ -1,29 +1,37 @@
 // 703: https://leetcode.com/problems/kth-largest-element-in-a-stream/
 
 /**
- * solution: error, Time Limit Exceeded
+ * solution 1: 348ms, 45.2MB
  * @param {number} k
  * @param {number[]} nums
  */
-var KthLargest = function(k, nums) {
-  this.nums = nums;
-  this.k = k - 1;
+var KthLargest1 = function(k, nums) {
+  this.k = k;
+  this.nums = nums.sort(function(a,b) {return b-a});
 };
 
-/** 
-* @param {number} val
-* @return {number}
-*/
-KthLargest.prototype.add = function(val) {
-  this.nums.push(val);
-  this.nums.sort((a, b) => b - a);
-  return this.nums[this.k];
+KthLargest1.prototype.add = function(val) {
+  let l = this.nums.length;
+  if(l<1){
+    this.nums.push(val);
+    return val;
+  }
+  for(let i=0;i<l;i++){
+    if(val>this.nums[i]){
+      this.nums.splice(i,0,val);
+      break;
+    }
+    if(i===l-1){
+      this.nums.push(val);
+      break;
+    }
+  }
+  return this.nums[this.k-1];
 };
-
 
 
 // solution 2: runtime 10704ms, memory usage: 69.1MB
-var KthLargest = function(k, nums) {
+var KthLargest2 = function(k, nums) {
   this.nums = nums;
   this.nums.sort((a, b) => b - a);
   this.k = k;
@@ -33,7 +41,7 @@ var KthLargest = function(k, nums) {
 * @param {number} val
 * @return {number}
 */
-KthLargest.prototype.add = function(val) {
+KthLargest2.prototype.add = function(val) {
   const len = this.nums.length;
   if (len < this.k || val > this.nums[len - 1]) {
     this.nums.push(val);
@@ -43,49 +51,70 @@ KthLargest.prototype.add = function(val) {
   return this.nums[this.k - 1];
 };
 
-/** 
-* Your KthLargest object will be instantiated and called as such:
-* var obj = Object.create(KthLargest).createNew(k, nums)
-* var param_1 = obj.add(val)
-*/
-
-// solution 2
-var KthLargest = function(k, nums) {
-  this.nums = nums.sort((a, b) => b - a);
-  this.k = k - 1;
-  this.nums = this.nums.slice(0, this.k + 1);
-};
-
-/** 
-* @param {number} val
-* @return {number}
-*/
-KthLargest.prototype.add = function(val) {
-  if (val > this.nums[this.nums.length - 1]) {
-    this.insert(val);
-    this.nums.pop();
+// solution 3: runtime 160ms, memory usage: 44.6MB
+class SkewHeapNode {    
+  constructor(val) {
+      this.val = val;
+      this.left = this.right = null;
   }
-  return this.nums[this.k];
-};
-
-KthLargest.prototype.insert = function(val) {
-  function insertSort(nums, val) {
-    if (nums.length === 1) {
-      return val > nums[0] ? [val, nums[0]] : [nums[0], val];
-    }
-    const centerIndex = Math.floor(nums.length / 2);
-    const centerVal = nums[centerIndex];
-    if (val > centerVal) {
-      return insertSort(nums.slice(0, centerIndex + 1), val);
-    } else {
-      return insertSort(nums.slice(centerIndex + 1), val);
-    }
-  }
-  return insertSort(this.nums, val);
 }
 
-/** 
-* Your KthLargest object will be instantiated and called as such:
-* var obj = Object.create(KthLargest).createNew(k, nums)
-* var param_1 = obj.add(val)
-*/
+class SkewHeap {
+  constructor(maxSize, root) {
+      this.maxSize = maxSize;
+      this.size = 1;
+      this.root = root;
+  }
+      
+  add(node) {
+      this.root = this.__merge(this.root, node);
+      this.size++;
+      
+      if (this.size > this.maxSize) {
+          this.root = this.__merge(this.root.left, this.root.right);
+    this.size--;
+      }
+      
+      return this.root.val;
+  }
+  
+  __swapChildren(n1) {
+      let t = n1.left;
+      n1.left = n1.right;
+      n1.right = t;
+  } 
+  
+  __merge(n1, n2) {
+      if (!n1) { return n2; }
+      if (!n2) { return n1; }
+      
+      if (n1.val <= n2.val) {
+          n1.right = this.__merge(n1.right, n2);
+          this.__swapChildren(n1);
+          return n1;
+      } 
+      
+      return this.__merge(n2, n1);
+  }
+}
+
+class KthLargest3 {
+  constructor(k, nums) {
+      this.heap = null;
+      this.k = k;
+      
+      for (let num of nums) {
+          this.add(num);
+      }
+  }
+  
+  add(val) {
+      let node = new SkewHeapNode(val);
+      if (this.heap === null) { 
+          this.heap = new SkewHeap(this.k, node); 
+          return val; 
+      }
+      
+      return this.heap.add(node);
+  }
+}
