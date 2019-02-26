@@ -1,5 +1,6 @@
 // 122: https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/
 /**
+ * 60ms, 35.4MB
  * @param {number[]} prices
  * @return {number}
  */
@@ -14,4 +15,22 @@ var maxProfit = function(prices) {
       }
   }
   return res;
+};
+
+
+/**
+ * 64ms, 35.1MB
+ * solution2
+ * @param {number[]} prices
+ * @return {number}
+ */
+var maxProfit2 = function(prices) {
+  const len = prices.length;
+  const total = prices.reduce((acc, cur, index) => {
+      if (index === len - 1) return acc;
+      const next = prices[index + 1];
+      if (next >= cur) return acc + next - cur;
+      return acc;
+  }, 0);
+  return total;
 };
