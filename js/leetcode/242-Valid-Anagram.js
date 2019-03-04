@@ -15,3 +15,22 @@ var isAnagram = function(s, t) {
   
   return res1 === res2;
 };
+
+
+/**
+ * solution2: 108ms, 39.2MB
+ * @param {string} s
+ * @param {string} t
+ * @return {boolean}
+ */
+var isAnagram2 = function(s, t) {
+  const sLen = s.length;
+  const tLen = t.length;
+  if (sLen != tLen) return false;
+  const counter = [];
+  for (let i = 0; i < sLen; i++) {
+    counter[s[i].charCodeAt(0) - 97]++;
+    counter[t[i].charCodeAt(0) - 97]--;
+  }
+  return !counter.some(item != 0);
+};
