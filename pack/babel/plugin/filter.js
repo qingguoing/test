@@ -1,5 +1,5 @@
 const template = require('babel-template');
-const t = require('babel-types');
+// const { types: t } = require('babel-types');
 const gen = require('babel-generator').default;
 // const test = template(`NAME || {}`);
 
@@ -10,25 +10,35 @@ const filterFn = {
 };
 
 module.exports = function({ types: t }) {
-  let filterFlag = false;
   const filterRegexp = /@filter\b/g;
+  let flag = 0;
   return {
     visitor: {
-      Program() {
-        if (filterRegexp.test(this.file.ast.comments[0].value.trim())) {
-          filterFlag = true;
+      Program(path) {
+        if (!filterRegexp.test(this.file.ast.comments[0].value.trim())) {
+          return;
         }
-      },
-      ObjectPattern(path) {
-        if (!filterFlag) return;
-        const parent = path.parent;
-        if (t.isVariableDeclarator(parent)) {
-          // TODO: 多走了一次
-          const initExpression = t.logicalExpression('||', parent.init, t.objectExpression([]));
-          parent.init = initExpression;
-          path.traverse(myVisitor);
-        }
-        path.replaceWith(obj);
+        path.traverse({
+          VariableDeclaration(path) {
+            const { node } = path;
+            if (node._filterPluginPassed) return;
+            const declarLen = node.declarations.length;
+            let nodeOut = null;
+            for (let i = 0; i < declarLen; i++) {
+              declar = node.declarations[i];
+              const pattern = declar.id;
+              if (t.isPattern(pattern)) {
+                const patternId = declar.init;
+                const initExpression = t.logicalExpression('||', t.cloneNode(patternId), t.objectExpression([]));
+                nodeOut = t.VariableDeclaration(node.kind, [
+                  t.VariableDeclarator(t.cloneNode(pattern), initExpression),
+                ]);
+                nodeOut._filterPluginPassed = true;
+              }
+            }
+            path.replaceWith(nodeOut);
+          },
+        });
       },
     }
   };
@@ -46,5 +56,5 @@ const myVisitor = {
   }
 }
 
-const objProp = t.objectProperty(t.identifier('a'), t.identifier('a'), false, true);
-const obj = t.objectPattern([objProp]);
+// const objProp = t.objectProperty(t.identifier('a'), t.identifier('a'), false, true);
+// const obj = t.objectPattern([objProp]);

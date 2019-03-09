@@ -1,2 +1,2 @@
 // @filter
-const { a = 'xxx' } = test;
+const { a } = test;
