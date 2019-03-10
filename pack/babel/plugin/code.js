@@ -1,2 +1,2 @@
 // @filter
-const { a } = test;
+let { a = '' | '@toUpperCase', b, c } = test;
