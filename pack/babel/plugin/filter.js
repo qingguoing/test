@@ -37,7 +37,7 @@ class PipelineTransformer {
       this.nodes.push(t.VariableDeclarator(pattern, patternInit));
       return;
     }
-    const objProps = [];
+    let objProps = [];
     for (let i = 0; i < propLen; i++) {
       const property = properties[i];
       const { key, value } = property;
@@ -58,6 +58,7 @@ class PipelineTransformer {
         objProps.push(t.objectProperty(patternKey, patternKey, false, true));
       }
     }
+    objProps = this.deduplicateArrOfObjectProperty(objProps);
     const initExpression = t.logicalExpression('||', patternInit, t.objectExpression([]));
     this.nodes.push(t.VariableDeclarator(t.objectPattern(objProps), initExpression));
   }
@@ -69,6 +70,33 @@ class PipelineTransformer {
 
   reverseNodes() {
     this.nodes.reverse();
+  }
+
+  deduplicateArrOfObjectProperty (arr) {
+    const obj = {};
+    for (let i = 0; i < arr.length; i++) {
+      const { key, value } = arr[i];
+      const uniquePropertyKey = this.getObjectPropertyUniqueKey(key);
+      if (obj[uniquePropertyKey]) {
+        if (!this.isIdentifierDuplicate(key, value)) {
+          obj[uniquePropertyKey] = arr[i];
+        }
+      } else {
+        obj[uniquePropertyKey] = arr[i];
+      }
+    }
+    return Object.keys(obj).map(item => obj[item]);
+  }
+
+  getObjectPropertyUniqueKey(property) {
+    const { type, name } = property;
+    return `${type}@${name}`;
+  }
+
+  isIdentifierDuplicate(identifierA, identifierB) {
+    const { tye: typeA, name: nameA } = identifierA;
+    const { type: typeB, name: nameB } = identifierB;
+    return typeA === typeB && nameA === nameB;
   }
 }
 
