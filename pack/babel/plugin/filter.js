@@ -25,9 +25,9 @@ class PipelineTransformer {
     if (t.isArrayPattern(pattern)) {
       this.pushArrayPattern(pattern, patternInit);
     }
-    if (t.isAssignmentPattern(pattern)) {
-      // TODO:
-    }
+    // if (t.isAssignmentPattern(pattern)) {
+      // this.pushAssignmentPattern(pattern, patternInit);
+    // }
   }
 
   pushObjectPattern(pattern, patternInit = null) {
@@ -41,11 +41,22 @@ class PipelineTransformer {
     for (let i = 0; i < propLen; i++) {
       const property = properties[i];
       const { key, value } = property;
+      if (t.isAssignmentPattern(value)) {
+        // this.pushAssignmentPattern(value, patternInit);
+        objProps.push(t.cloneNode(property));
+        continue;
+      }
       if (t.isPattern(value)) {
         this.init(value, key);
       }
-      const patternKey = t.cloneNode(key);
-      objProps.push(t.objectProperty(patternKey, patternKey, false, true));
+      if (t.isIdentifier(value) && key.name !== value.name) {
+        const patternKey = t.cloneNode(key);
+        const patternValue = t.cloneNode(value);
+        objProps.push(t.objectProperty(patternKey, patternValue, false, false));
+      } else {
+        const patternKey = t.cloneNode(key);
+        objProps.push(t.objectProperty(patternKey, patternKey, false, true));
+      }
     }
     const initExpression = t.logicalExpression('||', patternInit, t.objectExpression([]));
     this.nodes.push(t.VariableDeclarator(t.objectPattern(objProps), initExpression));
