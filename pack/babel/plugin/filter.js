@@ -94,7 +94,7 @@ class PipelineTransformer {
   }
 
   isIdentifierDuplicate(identifierA, identifierB) {
-    const { tye: typeA, name: nameA } = identifierA;
+    const { type: typeA, name: nameA } = identifierA;
     const { type: typeB, name: nameB } = identifierB;
     return typeA === typeB && nameA === nameB;
   }

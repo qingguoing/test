@@ -1,2 +1,2 @@
 // @filter
-const { a = x, b, a: { c } } = test;
+const { b, a: { c = y },  a = x, } = test;
