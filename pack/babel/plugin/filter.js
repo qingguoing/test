@@ -71,6 +71,10 @@ class PipelineTransformer {
     this.nodes.push(t.VariableDeclarator(pattern, initExpression));
   }
 
+  pushAssignmentPattern() {
+    
+  }
+  
   reverseNodes() {
     this.nodes.reverse();
   }
@@ -122,8 +126,8 @@ module.exports = function({ types: t }) {
             for (let i = 0; i < declarLen; i++) {
               declar = node.declarations[i];
               const pattern = declar.id;
+              const patternInit = declar.init;
               if (t.isPattern(pattern)) {
-                const patternInit = declar.init;
                 const pipeline = new PipelineTransformer({
                   nodes,
                   kind: nodeKind,
@@ -133,6 +137,7 @@ module.exports = function({ types: t }) {
                 pipeline.reverseNodes();
               } else {
                 // TODO: no pattern
+                nodes.push(t.cloneNode(declar));
               }
             }
             const nodeOut = t.VariableDeclaration(nodeKind, nodes);
