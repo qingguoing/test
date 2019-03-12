@@ -59,7 +59,10 @@ class PipelineTransformer {
       }
     }
     objProps = this.deduplicateArrOfObjectProperty(objProps);
-    const initExpression = t.logicalExpression('||', patternInit, t.objectExpression([]));
+    let initExpression = patternInit;
+    if (t.isIdentifier(patternInit)) {
+      initExpression = t.logicalExpression('||', patternInit, t.objectExpression([]));
+    }
     this.nodes.push(t.VariableDeclarator(t.objectPattern(objProps), initExpression));
   }
 
