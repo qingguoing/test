@@ -7,11 +7,7 @@
 // const { a: { b = 'xxx' } } = test;
 // const { a: { b } = c } = test;
 // const { a: { b } = {} } = test;
-// const { a = 'b', b = 'c' } = test;
+// let { a = 'b', b = 'c' } = _test;
 // const { a: { b } = c } = test;
-
-const test = {};
-function x() {
-  const { test } = a;
-}
-const a = 'x';
+const { c = '000' } = test;
+const { a = 'xxx' | 'toUpperCase' } = test;

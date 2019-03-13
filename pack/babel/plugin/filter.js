@@ -13,6 +13,7 @@ class PipelineTransformer {
   constructor(opts) {
     this.nodes = opts.nodes || [];
     this.kind = opts.kind;
+    this.path = opts.path;
     const pattern = t.cloneNode(opts.pattern);
     const patternInit = t.cloneNode(opts.patternInit);
     this.init(pattern, patternInit, true);
@@ -42,8 +43,8 @@ class PipelineTransformer {
       const property = properties[i];
       const { key, value } = property;
       if (t.isAssignmentPattern(value)) {
-        // this.pushAssignmentPattern(value, patternInit);
-        objProps.push(t.cloneNode(property));
+        this.pushAssignmentPattern(property, objProps);
+        // objProps.push(t.cloneNode(property));
         continue;
       }
       if (t.isPattern(value)) {
@@ -71,8 +72,18 @@ class PipelineTransformer {
     this.nodes.push(t.VariableDeclarator(pattern, initExpression));
   }
 
-  pushAssignmentPattern() {
-    
+  pushAssignmentPattern(property, objProps) {
+    const { key, value } = property;
+    const { left: patternLeft, right: patternRight } = value;
+    if (t.isBinaryExpression(patternRight)) {
+      const { left, right } = patternRight;
+      console.log(right.value);
+      const assignPattern = t.assignmentPattern(patternLeft, left);
+      const objProp = t.objectProperty(key, assignPattern, false, false);
+      objProps.push(objProp);
+    } else {
+      objProps.push(t.cloneNode(property));
+    }
   }
   
   reverseNodes() {
@@ -129,6 +140,7 @@ module.exports = function({ types: t }) {
               const patternInit = declar.init;
               if (t.isPattern(pattern)) {
                 const pipeline = new PipelineTransformer({
+                  path,
                   nodes,
                   kind: nodeKind,
                   pattern,
@@ -148,18 +160,6 @@ module.exports = function({ types: t }) {
       },
     }
   };
-}
-
-const myVisitor = {
-  // AssignmentPattern(path) {
-  //   path.remove();
-  // },
-  BinaryExpression(path) {
-    const name = path.node.right.name;
-    // console.log(filterFn[name]({
-    //   STRING: t.identifier('xxx'),
-    // }));
-  }
 }
 
 // const objProp = t.objectProperty(t.identifier('a'), t.identifier('a'), false, true);
