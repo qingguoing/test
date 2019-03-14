@@ -3,9 +3,11 @@ const { types: t } = require("@babel/core");
 const gen = require('babel-generator').default;
 // const test = template(`NAME || {}`);
 
-const filterFn = template(`
-  var IMPROT_NAME = String.prototype.toUpperCase.call(SOURCE);
-`);
+const filterFn = {
+  toUpperCase: template(`
+    var VAR_NAME = String.prototype.toUpperCase.call(TEMP_NAME);
+  `),
+};
 
 class PipelineTransformer {
   constructor(opts) {
@@ -14,6 +16,7 @@ class PipelineTransformer {
     this.path = opts.path;
     const { scope } = opts.path;
     this.scope = scope;
+    this.pipelineArr = opts.pipelineArr || [];
     const pattern = t.cloneNode(opts.pattern);
     const patternInit = t.cloneNode(opts.patternInit);
     this.init(pattern, patternInit, true);
@@ -78,13 +81,11 @@ class PipelineTransformer {
     if (t.isBinaryExpression(patternRight)) {
       const { left, right } = patternRight;
       const temp = this.scope.generateUidIdentifierBasedOnNode(patternLeft);
-      // objProp.push(t.buildVariableDeclaration(temp, patternLeft));
-      // const ast = filterFn({
-      //   IMPORT_NAME: patternLeft,
-      //   SOURCE: temp,
-      // });
-      console.log(right.value);
-      this.nodes.push(t.VariableDeclarator(patternLeft, temp));
+      this.pipelineArr.push(filterFn[right.value]({
+        VAR_NAME: patternLeft,
+        TEMP_NAME: temp,
+      }));
+      // this.nodes.push(t.VariableDeclarator(patternLeft, temp));
       const assignPattern = t.assignmentPattern(temp, left);
       const objProp = t.objectProperty(key, assignPattern, false, false);
       objProps.push(objProp);
@@ -135,34 +136,40 @@ module.exports = function({ types: t }) {
         }
         path.traverse({
           VariableDeclaration(path) {
-          // path.insertAfter(t.expressionStatement(t.stringLiteral('before')));
-
-            // const { node } = path;
-            // if (node._filterPluginPassed) return;
-            // const declarLen = node.declarations.length;
-            // const nodeKind = node.kind;
-            // const nodes = [];
-            // let declar;
-            // for (let i = 0; i < declarLen; i++) {
-            //   declar = node.declarations[i];
-            //   const pattern = declar.id;
-            //   const patternInit = declar.init;
-            //   if (t.isPattern(pattern)) {
-            //     const pipeline = new PipelineTransformer({
-            //       path,
-            //       nodes,
-            //       kind: nodeKind,
-            //       pattern,
-            //       patternInit,
-            //     });
-            //     pipeline.reverseNodes();
-            //   } else {
-            //     nodes.push(t.cloneNode(declar));
-            //   }
-            // }
-            // const nodeOut = t.VariableDeclaration(nodeKind, nodes);
-            // nodeOut._filterPluginPassed = true;
-            // path.replaceWith(nodeOut);
+            const { node } = path;
+            if (node._filterPluginPassed) return;
+            // path.insertAfter(filterFn());
+            console.log('xxx');
+            const declarLen = node.declarations.length;
+            const nodeKind = node.kind;
+            const nodes = [];
+            const pipelineArr = [];
+            let declar;
+            for (let i = 0; i < declarLen; i++) {
+              declar = node.declarations[i];
+              const pattern = declar.id;
+              const patternInit = declar.init;
+              if (t.isPattern(pattern)) {
+                const pipeline = new PipelineTransformer({
+                  path,
+                  nodes,
+                  pipelineArr,
+                  kind: nodeKind,
+                  pattern,
+                  patternInit,
+                });
+                pipeline.reverseNodes();
+              } else {
+                nodes.push(t.cloneNode(declar));
+              }
+            }
+            pipelineArr.forEach(ast => {
+              ast._filterPluginPassed = true;
+              path.insertAfter(ast);
+            });
+            const nodeOut = t.VariableDeclaration(nodeKind, nodes);
+            nodeOut._filterPluginPassed = true;
+            path.replaceWith(nodeOut);
           },
         });
       },

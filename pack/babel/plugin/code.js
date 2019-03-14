@@ -9,5 +9,5 @@
 // const { a: { b } = {} } = test;
 // let { a = 'b', b = 'c' } = _test;
 // const { a: { b } = c } = test;
-const { c = '000' } = test;
-const { a = 'xxx' | 'yyy' } = test;
+const { c = '000' | 'toUpperCase' } = test;
+const { a = 'xxx' | 'toUpperCase' } = test;
