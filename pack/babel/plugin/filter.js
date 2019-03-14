@@ -135,32 +135,34 @@ module.exports = function({ types: t }) {
         }
         path.traverse({
           VariableDeclaration(path) {
-            const { node } = path;
-            if (node._filterPluginPassed) return;
-            const declarLen = node.declarations.length;
-            const nodeKind = node.kind;
-            const nodes = [];
-            let declar;
-            for (let i = 0; i < declarLen; i++) {
-              declar = node.declarations[i];
-              const pattern = declar.id;
-              const patternInit = declar.init;
-              if (t.isPattern(pattern)) {
-                const pipeline = new PipelineTransformer({
-                  path,
-                  nodes,
-                  kind: nodeKind,
-                  pattern,
-                  patternInit,
-                });
-                pipeline.reverseNodes();
-              } else {
-                nodes.push(t.cloneNode(declar));
-              }
-            }
-            const nodeOut = t.VariableDeclaration(nodeKind, nodes);
-            nodeOut._filterPluginPassed = true;
-            path.replaceWith(nodeOut);
+          // path.insertAfter(t.expressionStatement(t.stringLiteral('before')));
+
+            // const { node } = path;
+            // if (node._filterPluginPassed) return;
+            // const declarLen = node.declarations.length;
+            // const nodeKind = node.kind;
+            // const nodes = [];
+            // let declar;
+            // for (let i = 0; i < declarLen; i++) {
+            //   declar = node.declarations[i];
+            //   const pattern = declar.id;
+            //   const patternInit = declar.init;
+            //   if (t.isPattern(pattern)) {
+            //     const pipeline = new PipelineTransformer({
+            //       path,
+            //       nodes,
+            //       kind: nodeKind,
+            //       pattern,
+            //       patternInit,
+            //     });
+            //     pipeline.reverseNodes();
+            //   } else {
+            //     nodes.push(t.cloneNode(declar));
+            //   }
+            // }
+            // const nodeOut = t.VariableDeclaration(nodeKind, nodes);
+            // nodeOut._filterPluginPassed = true;
+            // path.replaceWith(nodeOut);
           },
         });
       },
