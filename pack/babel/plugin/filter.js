@@ -3,17 +3,17 @@ const { types: t } = require("@babel/core");
 const gen = require('babel-generator').default;
 // const test = template(`NAME || {}`);
 
-const filterFn = {
-  toUpperCase: template(`
-    var upperCase = JSON.stringify(STRING),
-  `)
-};
+const filterFn = template(`
+  var IMPROT_NAME = String.prototype.toUpperCase.call(SOURCE);
+`);
 
 class PipelineTransformer {
   constructor(opts) {
     this.nodes = opts.nodes || [];
     this.kind = opts.kind;
     this.path = opts.path;
+    const { scope } = opts.path;
+    this.scope = scope;
     const pattern = t.cloneNode(opts.pattern);
     const patternInit = t.cloneNode(opts.patternInit);
     this.init(pattern, patternInit, true);
@@ -77,8 +77,15 @@ class PipelineTransformer {
     const { left: patternLeft, right: patternRight } = value;
     if (t.isBinaryExpression(patternRight)) {
       const { left, right } = patternRight;
+      const temp = this.scope.generateUidIdentifierBasedOnNode(patternLeft);
+      // objProp.push(t.buildVariableDeclaration(temp, patternLeft));
+      // const ast = filterFn({
+      //   IMPORT_NAME: patternLeft,
+      //   SOURCE: temp,
+      // });
       console.log(right.value);
-      const assignPattern = t.assignmentPattern(patternLeft, left);
+      this.nodes.push(t.VariableDeclarator(patternLeft, temp));
+      const assignPattern = t.assignmentPattern(temp, left);
       const objProp = t.objectProperty(key, assignPattern, false, false);
       objProps.push(objProp);
     } else {
@@ -148,7 +155,6 @@ module.exports = function({ types: t }) {
                 });
                 pipeline.reverseNodes();
               } else {
-                // TODO: no pattern
                 nodes.push(t.cloneNode(declar));
               }
             }
