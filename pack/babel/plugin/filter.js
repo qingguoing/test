@@ -7,6 +7,9 @@ const filterFn = {
   toUpperCase: template(`
     var VAR_NAME = String.prototype.toUpperCase.call(TEMP_NAME);
   `),
+  toLowerCase: template(`
+    var VAR_NAME = String.prototype.toLowerCase.call(TEMP_NAME);
+  `),
 };
 
 class PipelineTransformer {
@@ -79,19 +82,32 @@ class PipelineTransformer {
     const { key, value } = property;
     const { left: patternLeft, right: patternRight } = value;
     if (t.isBinaryExpression(patternRight)) {
-      const { left, right } = patternRight;
       const temp = this.scope.generateUidIdentifierBasedOnNode(patternLeft);
-      this.pipelineArr.push(filterFn[right.value]({
-        VAR_NAME: patternLeft,
-        TEMP_NAME: temp,
-      }));
+      const tempRes = this.pushBinaryExpression(temp, patternRight);
       // this.nodes.push(t.VariableDeclarator(patternLeft, temp));
-      const assignPattern = t.assignmentPattern(temp, left);
+      const assignPattern = t.assignmentPattern(tempRes, patternRight.left);
       const objProp = t.objectProperty(key, assignPattern, false, false);
       objProps.push(objProp);
     } else {
       objProps.push(t.cloneNode(property));
     }
+  }
+
+  pushBinaryExpression(patternLeft, patternRight) {
+    const { left, right } = patternRight;
+    const temp = this.scope.generateUidIdentifierBasedOnNode(patternLeft);
+    // this.pipelineArr.push(filterFn[right.value]({
+    //   VAR_NAME: patternLeft,
+    //   TEMP_NAME: temp,
+    // }));
+    console.log(right.value);
+    
+    const fun = t.callExpression(t.identifier(right.value), [temp]);
+    this.pipelineArr.push(t.VariableDeclaration(this.kind, [ t.VariableDeclarator(patternLeft, fun) ]));
+    if (t.isBinaryExpression(left)) {
+      this.pushBinaryExpression(temp, left);
+    }
+    return temp;
   }
   
   reverseNodes() {
@@ -139,7 +155,6 @@ module.exports = function({ types: t }) {
             const { node } = path;
             if (node._filterPluginPassed) return;
             // path.insertAfter(filterFn());
-            console.log('xxx');
             const declarLen = node.declarations.length;
             const nodeKind = node.kind;
             const nodes = [];
