@@ -9,5 +9,6 @@
 // const { a: { b } = {} } = test;
 // let { a = 'b', b = 'c' } = _test;
 // const { a: { b } = c } = test;
-const { c = '000' | 'toUpperCase' | 'toLowerCase' } = test;
-// const { a = 'xxx' | 'toUpperCase' } = test;
+const test = {};
+const { c = 'xxx' | 'String.prototype.toUpperCase.call' } = test;
+const { a = 'xxx' | 'aaa' | 'bbb' | 'ccc' | 'ddd' | 'eee' } = test;

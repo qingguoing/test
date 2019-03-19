@@ -1,16 +1,6 @@
 const template = require('babel-template');
 const { types: t } = require("@babel/core");
 const gen = require('babel-generator').default;
-// const test = template(`NAME || {}`);
-
-const filterFn = {
-  toUpperCase: template(`
-    var VAR_NAME = String.prototype.toUpperCase.call(TEMP_NAME);
-  `),
-  toLowerCase: template(`
-    var VAR_NAME = String.prototype.toLowerCase.call(TEMP_NAME);
-  `),
-};
 
 class PipelineTransformer {
   constructor(opts) {
@@ -19,7 +9,6 @@ class PipelineTransformer {
     this.path = opts.path;
     const { scope } = opts.path;
     this.scope = scope;
-    this.pipelineArr = opts.pipelineArr || [];
     const pattern = t.cloneNode(opts.pattern);
     const patternInit = t.cloneNode(opts.patternInit);
     this.init(pattern, patternInit, true);
@@ -32,9 +21,6 @@ class PipelineTransformer {
     if (t.isArrayPattern(pattern)) {
       this.pushArrayPattern(pattern, patternInit);
     }
-    // if (t.isAssignmentPattern(pattern)) {
-      // this.pushAssignmentPattern(pattern, patternInit);
-    // }
   }
 
   pushObjectPattern(pattern, patternInit = null) {
@@ -50,7 +36,6 @@ class PipelineTransformer {
       const { key, value } = property;
       if (t.isAssignmentPattern(value)) {
         this.pushAssignmentPattern(property, objProps);
-        // objProps.push(t.cloneNode(property));
         continue;
       }
       if (t.isPattern(value)) {
@@ -83,9 +68,10 @@ class PipelineTransformer {
     const { left: patternLeft, right: patternRight } = value;
     if (t.isBinaryExpression(patternRight)) {
       const temp = this.scope.generateUidIdentifierBasedOnNode(patternLeft);
-      const tempRes = this.pushBinaryExpression(temp, patternRight);
-      // this.nodes.push(t.VariableDeclarator(patternLeft, temp));
-      const assignPattern = t.assignmentPattern(tempRes, patternRight.left);
+      this.filterFnArr = [];
+      const defaultValue = this.pushBinaryExpression(patternRight);
+      this.handleFilterFun(patternLeft, temp);
+      const assignPattern = t.assignmentPattern(temp, defaultValue);
       const objProp = t.objectProperty(key, assignPattern, false, false);
       objProps.push(objProp);
     } else {
@@ -93,21 +79,30 @@ class PipelineTransformer {
     }
   }
 
-  pushBinaryExpression(patternLeft, patternRight) {
+  pushBinaryExpression(patternRight) {
+    const res = [];
     const { left, right } = patternRight;
-    const temp = this.scope.generateUidIdentifierBasedOnNode(patternLeft);
-    // this.pipelineArr.push(filterFn[right.value]({
-    //   VAR_NAME: patternLeft,
-    //   TEMP_NAME: temp,
-    // }));
-    console.log(right.value);
-    
-    const fun = t.callExpression(t.identifier(right.value), [temp]);
-    this.pipelineArr.push(t.VariableDeclaration(this.kind, [ t.VariableDeclarator(patternLeft, fun) ]));
+    this.filterFnArr.push(right.value);
+    res.push(right.value);
     if (t.isBinaryExpression(left)) {
-      this.pushBinaryExpression(temp, left);
+      return this.pushBinaryExpression(left);
     }
-    return temp;
+    return left;
+  }
+
+  handleFilterFun(origin, temp) {
+    const len = this.filterFnArr.length;
+    let tempCenter = origin;
+    let tempParam = temp;
+    for (let i = 0; i < len; i++) {
+      tempParam = i === len - 1 ? temp : this.scope.generateUidIdentifierBasedOnNode(tempParam);
+      const fun = t.callExpression(t.identifier(this.filterFnArr[i]), [tempParam]);
+      this.nodes.push(t.VariableDeclarator(tempCenter, fun));
+      tempCenter = tempParam;
+      if (i === len - 1) {
+        tempParam = temp;
+      }
+    }
   }
   
   reverseNodes() {
@@ -154,11 +149,9 @@ module.exports = function({ types: t }) {
           VariableDeclaration(path) {
             const { node } = path;
             if (node._filterPluginPassed) return;
-            // path.insertAfter(filterFn());
             const declarLen = node.declarations.length;
             const nodeKind = node.kind;
             const nodes = [];
-            const pipelineArr = [];
             let declar;
             for (let i = 0; i < declarLen; i++) {
               declar = node.declarations[i];
@@ -168,7 +161,6 @@ module.exports = function({ types: t }) {
                 const pipeline = new PipelineTransformer({
                   path,
                   nodes,
-                  pipelineArr,
                   kind: nodeKind,
                   pattern,
                   patternInit,
@@ -178,10 +170,6 @@ module.exports = function({ types: t }) {
                 nodes.push(t.cloneNode(declar));
               }
             }
-            pipelineArr.forEach(ast => {
-              ast._filterPluginPassed = true;
-              path.insertAfter(ast);
-            });
             const nodeOut = t.VariableDeclaration(nodeKind, nodes);
             nodeOut._filterPluginPassed = true;
             path.replaceWith(nodeOut);
