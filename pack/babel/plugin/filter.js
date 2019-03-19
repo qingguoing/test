@@ -80,10 +80,8 @@ class PipelineTransformer {
   }
 
   pushBinaryExpression(patternRight) {
-    const res = [];
     const { left, right } = patternRight;
     this.filterFnArr.push(right.value);
-    res.push(right.value);
     if (t.isBinaryExpression(left)) {
       return this.pushBinaryExpression(left);
     }
@@ -95,8 +93,12 @@ class PipelineTransformer {
     let tempCenter = origin;
     let tempParam = temp;
     for (let i = 0; i < len; i++) {
+      const filterFn = this.filterFnArr[i];
+      const fnArr = filterFn.split(' ');
+      const fnName = fnArr.shift();
+      const fnParams = fnArr.map(str => t.stringLiteral(str));
       tempParam = i === len - 1 ? temp : this.scope.generateUidIdentifierBasedOnNode(tempParam);
-      const fun = t.callExpression(t.identifier(this.filterFnArr[i]), [tempParam]);
+      const fun = t.callExpression(t.identifier(fnName), [tempParam, ...fnParams]);
       this.nodes.push(t.VariableDeclarator(tempCenter, fun));
       tempCenter = tempParam;
       if (i === len - 1) {
