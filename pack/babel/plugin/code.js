@@ -10,5 +10,5 @@
 // let { a = 'b', b = 'c' } = _test;
 // const { a: { b } = c } = test;
 const test = {};
-const { c = 'xxx' | 'String.prototype.toUpperCase.call a b c' } = test;
-// const { a = 'xxx' | 'aaa' | 'bbb' | 'ccc' | 'ddd' | 'eee' } = test;
+const { c = 'xxx', ...b } = test;
+const { a = 'xxx' | 'aaa' | 'bbb' | 'ccc' | 'ddd' | 'eee', ...d } = test;

@@ -11,7 +11,7 @@ class PipelineTransformer {
     this.scope = scope;
     const pattern = t.cloneNode(opts.pattern);
     const patternInit = t.cloneNode(opts.patternInit);
-    this.init(pattern, patternInit, true);
+    this.init(pattern, patternInit);
   }
 
   init(pattern, patternInit) {
@@ -31,8 +31,13 @@ class PipelineTransformer {
       return;
     }
     let objProps = [];
+    let restElement = null;
     for (let i = 0; i < propLen; i++) {
       const property = properties[i];
+      if (t.isRestElement(property)) {
+        restElement = property;
+        continue;
+      }
       const { key, value } = property;
       if (t.isAssignmentPattern(value)) {
         this.pushAssignmentPattern(property, objProps);
@@ -54,6 +59,9 @@ class PipelineTransformer {
     let initExpression = patternInit;
     if (t.isIdentifier(patternInit)) {
       initExpression = t.logicalExpression('||', patternInit, t.objectExpression([]));
+    }
+    if (restElement) {
+      objProps.push(restElement);
     }
     this.nodes.push(t.VariableDeclarator(t.objectPattern(objProps), initExpression));
   }
