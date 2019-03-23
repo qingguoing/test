@@ -1,6 +1,17 @@
-const template = require('babel-template');
 const { types: t } = require("@babel/core");
-const gen = require('babel-generator').default;
+
+const enableFileRegexp = /@pipeline\b/g;
+const disableNextLineRegexp = /@pipeline-next-line-disabled\b/g;
+const disableLineRegexp = /@pipeline-line-disabled\b/g;
+
+function variableDeclarationHasPattern(node) {
+  for (const declar of node.declarations) {
+    if (t.isPattern(declar.id)) {
+      return true;
+    }
+  }
+  return false;
+}
 
 class PipelineTransformer {
   constructor(opts) {
@@ -148,17 +159,32 @@ class PipelineTransformer {
 }
 
 module.exports = function({ types: t }) {
-  const filterRegexp = /@filter\b/g;
   return {
     visitor: {
       Program(path) {
-        if (!filterRegexp.test(this.file.ast.comments[0].value.trim())) {
+        let { value = '' } = this.file.ast.comments[0] || {};
+        value = value.trim();
+        if (!enableFileRegexp.test(value)) {
           return;
         }
         path.traverse({
           VariableDeclaration(path) {
-            const { node } = path;
+            const { node, parent } = path;
+            if (t.isForXStatement(parent)) return;
+            if (!variableDeclarationHasPattern(node)) return;
             if (node._filterPluginPassed) return;
+            for (let i = 0; i < (node.leadingComments || []).length; i++) {
+              const { value = '' } = node.leadingComments[i];
+              if (disableNextLineRegexp.test(value.trim())) {
+                return;
+              }
+            }
+            for (let i = 0; i < (node.trailingComments || []).length; i++) {
+              const { value = '' } = node.trailingComments[i];
+              if(disableLineRegexp.test(value.trim())) {
+                return;
+              }
+            }
             const declarLen = node.declarations.length;
             const nodeKind = node.kind;
             const nodes = [];
@@ -189,6 +215,3 @@ module.exports = function({ types: t }) {
     }
   };
 }
-
-// const objProp = t.objectProperty(t.identifier('a'), t.identifier('a'), false, true);
-// const obj = t.objectPattern([objProp]);
