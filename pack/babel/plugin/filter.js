@@ -1,6 +1,4 @@
-const template = require('babel-template');
 const { types: t } = require("@babel/core");
-const gen = require('babel-generator').default;
 
 const enableFileRegexp = /@pipeline\b/g;
 const disableNextLineRegexp = /@pipeline-next-line-disabled\b/g;
