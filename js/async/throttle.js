@@ -18,7 +18,7 @@ function throttle1(fn, gap) {
           clearInterval(intervalId);
           intervalId = null;
         };
-      });
+      }, gap);
     }
   }
 }
