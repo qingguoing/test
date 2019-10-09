@@ -1,16 +1,16 @@
 function throttle1(fn, gap) {
-  let intervalId = null;
+  let initCall = false;
   let callArgs = null;
   let context = this;
   return function (...args) {
     context = this;
     callArgs = args;
 
-    if (!intervalId) {
+    if (!initCall) {
       fn.apply(context, callArgs);
       callArgs = null;
-
-      intervalId = setInterval(() => {
+      initCall = true;
+      let intervalId = setInterval(() => {
         if (callArgs) {
           fn.apply(context, callArgs);
           callArgs = null;

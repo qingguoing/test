@@ -4,7 +4,7 @@
       {
         "type": "node",
         "request": "launch",
-        "name": "Launch Program",
+        "name": "leetcode",
         "program": "${workspaceFolder}/js/leetcode/test.js"
       },
       {
@@ -12,7 +12,13 @@
         "request": "launch",
         "name": "babel-demo",
         "program": "${workspaceFolder}/pack/babel/plugin/index.js"
-      }
+      },
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "test",
+        "program": "${workspaceFolder}/test.js"
+      },
     ],
     "compounds": []
 }

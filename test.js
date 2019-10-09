@@ -1,13 +1,50 @@
-const delegate = require('delegates');
-const a ={};
-a.b = {
-    test: 'test',
-    foo() {
-        return 'foo method';
-    },
-};
+const fetch = require('node-fetch');
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) {
+  try {
+    var info = gen[key](arg);
+		var value = info.value;
+  } catch (error) {
+		console.log(error);
+    reject(error);
+    return;
+	}
+  if (info.done) {
+    resolve(value);
+  } else {
+    Promise.resolve(value).then(_next, _throw);
+  }
+}
 
+function _asyncToGenerator(fn) {
+  return function () {
+    var self = this, args = arguments;
+    return new Promise(function (resolve, reject) {
+      var gen = fn.apply(self, args);
+      function _next(value) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value);
+      }
+      function _throw(err) {
+        asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err);
+      }
+      _next(undefined);
+    });
+  };
+}
 
-delegate(a, 'b').method('foo');
+function test() {
+  return _test.apply(this, arguments);
+}
 
-console.log(a.foo());
+function _test() {
+  _test = _asyncToGenerator(function* () {
+    let res = null;
+
+    try {
+			res = yield fetch('https://baidu.com');
+    } catch (err) {
+      return null;
+		}
+    return res;
+  });
+  return _test.apply(this, arguments);
+}
