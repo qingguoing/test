@@ -80,7 +80,7 @@ class EventEmitter {
   }
 
   eventNames() {
-    return Object.keys(this.e);
+    return Object.keys(this.allListeners);
   }
 
   getListeners(eventName) {

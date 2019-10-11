@@ -25,9 +25,9 @@ function throttle1(fn, gap) {
 
 const throttle2 = (fn, wait) => {
   let inThrottle, lastFn, lastTime;
-  return function() {
-    const context = this,
-      args = arguments;
+  return function(...args) {
+    const context = this;
+      // args = arguments;
     if (!inThrottle) {
       fn.apply(context, args);
       lastTime = Date.now();
@@ -51,10 +51,12 @@ const a = {
   }
 };
 
-const test = throttle(a.foo, 500);
+const test = throttle2(a.foo, 500);
 new Array(100).fill(0).forEach((val, index) => {
   const i = index + 1;
-  test.call({
-    bar: i,
-  }, i);
+  setTimeout(() => {
+    test.call({
+      bar: i,
+    }, i);
+  }, i * 100);
 });
