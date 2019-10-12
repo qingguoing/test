@@ -27,3 +27,7 @@ if (typeof Object.assign != 'function') {
     configurable: true
   });
 }
+
+
+
+console.log(run(['a', 'b', 'c']));

@@ -35,4 +35,15 @@ var permute2 = function(nums, n = 0) {
   return res;
 };
 
-console.log(permute2(['a', 'b', 'c']))
+function permute3(nums) {
+  const res = [];
+  if (nums.length === 1) return [nums];
+  const prevs = permute3(nums.slice(1));
+  for (const prev of prevs) {
+    for (let i = 0; i <= prev.length; i++) {
+      const temp = prev.slice(0, i).concat(nums[0]).concat(prev.slice(i));
+      res.push(temp);
+    }
+  }
+  return res;
+}
