@@ -17,11 +17,14 @@ var permute = function(nums) {
   return res;
 };
 
+// [a, b, c]
+// 0 -> 1 -> 2
+
 // dp
 var permute2 = function(nums, n = 0) {
-  if (n >= nums.length) return [[]];
+  if (n >= nums.length - 1) return [nums.slice(-1)];
   const res = [];
-  const prevs = permute(nums, n + 1);
+  const prevs = permute2(nums, n + 1);
   for (let prev of prevs) {
     for (let i = 0; i <= prev.length; i++) {
       const current = prev.slice();
@@ -31,3 +34,5 @@ var permute2 = function(nums, n = 0) {
   }
   return res;
 };
+
+console.log(permute2(['a', 'b', 'c']))
