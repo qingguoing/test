@@ -27,6 +27,7 @@ class P {
       const runFulfilled = (ret) => {
         this._status = FULFILLED;
         this._value = ret;
+        let fn = null;
         while (fn = this._fulfilledListenerQueue.shift()) {
           fn(res);
         }
@@ -49,7 +50,7 @@ class P {
     setTimeout(run, 0);
   }
 
-  reject(err) {
+  _reject(err) {
     if (this.status !== PENDING) {
       return;
     }
@@ -101,8 +102,8 @@ class P {
       };
       switch(_status) {
         case PENDING:
-          this.fulfilledListeners.push(resolve);
-          this.rejectedListeners.push(reject);
+          this._fulfilledListenerQueue.push(resolve);
+          this._rejectedListenerQueue.push(reject);
           break;
         case FULFILLED:
           resolve(_value);
@@ -128,14 +129,14 @@ class P {
     return new P((resolve, reject) => reject(err));
   }
 
-  static all(...fns) {
+  static all(fns) {
     let len = fns.length;
     const ret = [];
     // ret 值得顺序要对应
     return new P((resolve, reject) => {
-      for (let [i, fn] of fns) {
+      for (let i = 0; i < fns.length; i++) {
         // 包成 P 实例
-        this.resolve(fn).then(
+        this.resolve(fns[i]).then(
           (res) => {
             len--;
             ret[i] = res;
@@ -147,7 +148,7 @@ class P {
     });
   }
 
-  static race(...fns) {
+  static race(fns) {
     return new P((resolve, reject) => {
       for (let fn of fns) {
         this.resolve(fn).then(
@@ -158,3 +159,12 @@ class P {
     });
   }
 }
+
+var promise1 = P.resolve(3);
+var promise2 = 42;
+var promise3 = new P(function(resolve, reject) {
+  setTimeout(resolve, 100, 'foo');
+});
+P.race([promise1, promise2, promise3]).then(function(values) {
+  console.log(values);
+});

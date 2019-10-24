@@ -16,8 +16,8 @@
       {
         "type": "node",
         "request": "launch",
-        "name": "test",
-        "program": "${workspaceFolder}/test.js"
+        "name": "p",
+        "program": "${workspaceFolder}/js/async/p.js"
       },
     ],
     "compounds": []
