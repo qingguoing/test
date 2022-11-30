@@ -47,3 +47,22 @@ function permute3(nums) {
   }
   return res;
 }
+
+
+
+var permute4 = function(nums) {
+  const getTest = (arr) => {
+      let res = [];
+      if (arr.length === 1) return [arr];
+      for (let i = 0; i < arr.length; i++) {
+          const tmp = getTest(arr.slice(0, i).concat(arr.slice(i+1)));
+          console.log('xxx', tmp);
+          res = [...res, ...tmp.reduce((acc, cur) => {
+              return [...acc, [...cur, arr[i]]]
+          }, [])];
+      }
+      return res;
+  }
+
+  return getTest(nums);
+};
